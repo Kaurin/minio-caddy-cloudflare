@@ -1,0 +1,23 @@
+{
+	# debug
+	# acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+}
+
+{env.MY_MINIO_FQDN} {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+
+	reverse_proxy minio:9000 {
+		header_up Host {host}
+		header_up X-Real-IP {remote}
+	}
+}
+
+{env.MY_MINIO_CONSOLE_FQDN} {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+
+	reverse_proxy minio:9001
+}

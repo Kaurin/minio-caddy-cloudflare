@@ -1,0 +1,48 @@
+version: '3.8'
+
+# Unfortunately does not work in podman-compose like it does in docker-compose
+# https://github.com/containers/podman-compose/issues/718
+env_file:
+  - path: ./myenv.env
+    required: true
+
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: "${MY_MINIO_ROOT_USER}"
+      MINIO_ROOT_PASSWORD: "${MY_MINIO_ROOT_PASSWORD}"
+    volumes:
+      - minio_data:/data
+    networks:
+      - caddy-network
+
+  caddy:
+    build: .
+    container_name: caddy
+    restart: unless-stopped
+    # cap_add:
+    #   - NET_ADMIN
+    ports:
+      - "8080:80"
+      - "8443:443"
+    environment:
+      MY_MINIO_FQDN: "${MY_MINIO_FQDN}"
+      MY_MINIO_CONSOLE_FQDN: "${MY_MINIO_CONSOLE_FQDN}"
+      CLOUDFLARE_API_TOKEN: "${MY_CLOUDFLARE_API_TOKEN}"
+    volumes:
+      - caddy_data:/data
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    networks:
+      - caddy-network
+    depends_on:
+      - minio
+
+volumes:
+  minio_data:
+  caddy_data:
+
+networks:
+  caddy-network:
