@@ -14,6 +14,9 @@ services:
     environment:
       MINIO_ROOT_USER: "${MY_MINIO_ROOT_USER}"
       MINIO_ROOT_PASSWORD: "${MY_MINIO_ROOT_PASSWORD}"
+      MINIO_BROWSER_LOGIN_ANIMATION: "off"
+      MINIO_BROWSER_REDIRECT: "false"
+      MINIO_BROWSER_HSTS_SECONDS: 31536000
     volumes:
       - minio_data:/data
     networks:

@@ -1,20 +1,15 @@
 {
 	# debug
 	# acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 }
 
-{env.MY_MINIO_FQDN} {
-	tls {
-		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-	}
-
+# Cannot use {env.<env-name>} in server name
+{$MY_MINIO_FQDN} {
 	reverse_proxy minio:9000
 }
 
-{env.MY_MINIO_CONSOLE_FQDN} {
-	tls {
-		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-	}
-
+# Cannot use {env.<env-name>} in server name
+{$MY_MINIO_CONSOLE_FQDN} {
 	reverse_proxy minio:9001
 }
